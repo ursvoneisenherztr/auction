@@ -1,0 +1,150 @@
+<div class="properties-container">
+  <div class="header">
+    <h1>Properties</h1>
+    <p class="subtitle">Browse available properties for auction</p>
+  </div>
+
+  <!-- Search and Filter Section -->
+  <div class="search-section">
+    <div class="search-controls">
+      <div class="search-group">
+        <label for="city-search">City</label>
+        <input
+          id="city-search"
+          type="text"
+          [(ngModel)]="searchCity"
+          placeholder="Search by city..."
+          class="search-input"
+        />
+      </div>
+      <div class="search-group">
+        <label for="type-search">Property Type</label>
+        <select
+          id="type-search"
+          [(ngModel)]="searchPropertyType"
+          class="search-input"
+        >
+          <option value="">All Types</option>
+          <option *ngFor="let type of availablePropertyTypes" [value]="type">
+            {{ type }}
+          </option>
+        </select>
+      </div>
+      <div class="search-buttons">
+        <button (click)="onSearch()" class="btn btn-primary">Search</button>
+        <button (click)="onReset()" class="btn btn-secondary">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  @if (error()) {
+    <div class="error-message">{{ error() }}</div>
+  }
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading">Loading properties...</div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && properties().length === 0) {
+    <div class="empty-state">
+      <p>No properties found. Try adjusting your search criteria.</p>
+    </div>
+  }
+
+  <!-- Properties Grid -->
+  @if (!loading() && properties().length > 0) {
+    <div class="properties-grid">
+      @for (property of properties(); track property.id) {
+        <div class="property-card">
+          <div class="card-image">
+            @if (property.imageUrl) {
+              <img [src]="property.imageUrl" [alt]="property.title" />
+            } @else {
+              <div class="image-placeholder">No Image</div>
+            }
+            <div [class]="'auction-badge ' + getAuctionStatusClass(property.auction?.status)">
+              {{ getAuctionStatusText(property.auction?.status) }}
+            </div>
+          </div>
+
+          <div class="card-content">
+            <h3>{{ property.title }}</h3>
+            <p class="property-type">{{ property.propertyType }}</p>
+
+            <div class="property-details">
+              <div class="detail-row">
+                <span class="detail-label">Location:</span>
+                <span class="detail-value">{{ property.city }}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Size:</span>
+                <span class="detail-value">{{ property.squareMeters }} m²</span>
+              </div>
+              @if (property.bedrooms) {
+                <div class="detail-row">
+                  <span class="detail-label">Bedrooms:</span>
+                  <span class="detail-value">{{ property.bedrooms }}</span>
+                </div>
+              }
+              @if (property.bathrooms) {
+                <div class="detail-row">
+                  <span class="detail-label">Bathrooms:</span>
+                  <span class="detail-value">{{ property.bathrooms }}</span>
+                </div>
+              }
+            </div>
+
+            <div class="card-footer">
+              <div class="price">
+                <span class="price-label">Price:</span>
+                <span class="price-value">${{ property.price.toLocaleString() }}</span>
+              </div>
+              <a
+                [routerLink]="['/properties', property.id]"
+                class="btn btn-link"
+              >
+                View Details →
+              </a>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button
+        (click)="goToPage(currentPage() - 1)"
+        [disabled]="currentPage() === 1"
+        class="btn btn-pagination"
+      >
+        ← Previous
+      </button>
+
+      @for (page of paginationArray; track page) {
+        <button
+          (click)="goToPage(page)"
+          [class]="'btn btn-pagination' + (page === currentPage() ? ' active' : '')"
+        >
+          {{ page }}
+        </button>
+      }
+
+      <button
+        (click)="goToPage(currentPage() + 1)"
+        [disabled]="currentPage() === totalPages"
+        class="btn btn-pagination"
+      >
+        Next →
+      </button>
+    </div>
+
+    <div class="pagination-info">
+      Showing {{ (currentPage() - 1) * pageSize + 1 }}-{{ Math.min(currentPage() * pageSize, totalProperties()) }} of
+      {{ totalProperties() }} properties
+    </div>
+  }
+</div>

@@ -1,0 +1,118 @@
+<div class="dashboard">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <h1>Zwangsversteigerungen</h1>
+      <p class="subtitle">Günstiger Immobilienerwerb aus Zwangsversteigerungen</p>
+    </div>
+  </header>
+
+  <!-- Search Bar -->
+  <div class="search-section">
+    <input 
+      type="text" 
+      class="search-input" 
+      placeholder="Suchen Sie nach Immobilien..."
+      (input)="onSearch($event.target.value)">
+  </div>
+
+  <!-- Stats Section -->
+  <div class="stats-section">
+    <div class="stat-card">
+      <div class="stat-number">{{ totalProperties }}</div>
+      <div class="stat-label">Immobilien</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ activeAuctions }}</div>
+      <div class="stat-label">Aktive Auktionen</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ cities.length }}</div>
+      <div class="stat-label">Städte</div>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <label>Stadt</label>
+      <select [(ngModel)]="selectedCity" (change)="onFilterChange()" class="filter-select">
+        <option value="">Alle Städte</option>
+        <option *ngFor="let city of cities" [value]="city">{{ city }}</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Immobilientyp</label>
+      <select [(ngModel)]="selectedType" (change)="onFilterChange()" class="filter-select">
+        <option value="">Alle Typen</option>
+        <option *ngFor="let type of propertyTypes" [value]="type">{{ type }}</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Maximaler Preis</label>
+      <div class="price-range">
+        <input 
+          type="range" 
+          min="100000" 
+          max="2000000" 
+          step="50000"
+          [(ngModel)]="priceRange" 
+          (change)="onFilterChange()"
+          class="range-slider">
+        <span class="price-display">bis {{ formatPrice(priceRange) }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">Immobilien werden geladen...</div>
+
+  <!-- Properties Grid -->
+  <div class="properties-grid" *ngIf="!loading">
+    <div *ngIf="filteredProperties.length === 0" class="no-results">
+      Keine Immobilien gefunden. Versuchen Sie andere Filter.
+    </div>
+
+    <div *ngFor="let property of getFeaturedProperties()" 
+         class="property-card"
+         [routerLink]="['/properties', property.id]">
+      <div class="card-header">
+        <span class="badge" [ngClass]="getAuctionStatusClass(property.auction?.status || '')">
+          {{ property.auction?.status || 'N/A' }}
+        </span>
+      </div>
+
+      <div class="card-body">
+        <h3>{{ property.title }}</h3>
+        <p class="city">📍 {{ property.city }}</p>
+        <p class="type">{{ property.propertyType }}</p>
+        
+        <div class="property-details">
+          <span *ngIf="property.squareMeters">{{ property.squareMeters }} m²</span>
+          <span *ngIf="property.bedrooms">{{ property.bedrooms }} Zimmer</span>
+        </div>
+
+        <div class="price-section">
+          <span class="label">Startpreis</span>
+          <span class="price">{{ formatPrice(property.price) }}</span>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <button class="btn-details">Details ansehen →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- View All Button -->
+  <div class="view-all-section" *ngIf="filteredProperties.length > 6">
+    <button [routerLink]="['/properties']" class="btn-view-all">
+      Alle Immobilien anzeigen ({{ filteredProperties.length }})
+    </button>
+  </div>
+</div>

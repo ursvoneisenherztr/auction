@@ -1,0 +1,101 @@
+<div class="place-bid-container">
+  <!-- Success Message -->
+  @if (success()) {
+    <div class="alert alert-success">{{ success() }}</div>
+  }
+
+  <!-- Error Message -->
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+
+  <!-- Auction Closed Message -->
+  @if (!isAuctionActive()) {
+    <div class="alert alert-info">
+      <strong>Auction Closed:</strong> This auction is no longer active. Bidding is not available.
+    </div>
+  }
+
+  <!-- Bid Form -->
+  @if (isAuctionActive()) {
+    <div class="bid-form-section">
+      <h3>Place Your Bid</h3>
+
+      <!-- Current Highest Bid Info -->
+      <div class="bid-info">
+        @if (currentHighestBid()) {
+          <div class="info-row">
+            <span class="info-label">Current Highest Bid:</span>
+            <span class="info-value">${{ currentHighestBid()!.amount.toLocaleString() }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Highest Bidder:</span>
+            <span class="info-value">{{ currentHighestBid()!.bidderId }}</span>
+          </div>
+        } @else {
+          <div class="info-row">
+            <span class="info-label">Starting Price:</span>
+            <span class="info-value">${{ auction!.startingPrice.toLocaleString() }}</span>
+          </div>
+        }
+        <div class="info-row">
+          <span class="info-label">Minimum Bid:</span>
+          <span class="info-value info-highlight">${{ getMinimumBidAmount().toFixed(2) }}</span>
+        </div>
+      </div>
+
+      <!-- Bid Form -->
+      <form [formGroup]="bidForm" (ngSubmit)="onSubmit()" class="bid-form">
+        <!-- Bidder ID/Name Field -->
+        <div class="form-group">
+          <label for="bidderId" class="form-label">Your Name or ID *</label>
+          <input
+            type="text"
+            id="bidderId"
+            formControlName="bidderId"
+            class="form-input"
+            [class.input-error]="bidderIdError"
+            placeholder="Enter your name or bidder ID"
+          />
+          @if (bidderIdError) {
+            <span class="error-text">{{ bidderIdError }}</span>
+          }
+        </div>
+
+        <!-- Bid Amount Field -->
+        <div class="form-group">
+          <label for="amount" class="form-label">Bid Amount *</label>
+          <div class="amount-input-group">
+            <span class="currency-symbol">$</span>
+            <input
+              type="number"
+              id="amount"
+              formControlName="amount"
+              class="form-input amount-input"
+              [class.input-error]="amountError"
+              [min]="getMinimumBidAmount()"
+              step="0.01"
+              placeholder="0.00"
+            />
+          </div>
+          @if (amountError) {
+            <span class="error-text">{{ amountError }}</span>
+          }
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="btn btn-primary btn-submit"
+          [disabled]="!bidForm.valid || loading()"
+        >
+          @if (loading()) {
+            <span>Placing Bid...</span>
+          } @else {
+            <span>Place Bid</span>
+          }
+        </button>
+      </form>
+    </div>
+  }
+</div>

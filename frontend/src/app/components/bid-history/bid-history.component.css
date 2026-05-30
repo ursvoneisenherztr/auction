@@ -1,0 +1,287 @@
+.bid-history-container {
+  margin: 2rem 0;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.bid-history-container h3 {
+  margin: 0 0 1.5rem 0;
+  color: #333;
+  font-size: 1.25rem;
+}
+
+.alert {
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.alert-error {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-style: italic;
+}
+
+.no-bids {
+  text-align: center;
+  padding: 2rem;
+  background: white;
+  border-radius: 6px;
+  color: #999;
+}
+
+.bid-list {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.bid-list-header {
+  background: #f0f0f0;
+  padding: 0;
+}
+
+.bid-header-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 2px solid #ddd;
+}
+
+.header-bidder,
+.header-amount,
+.header-time {
+  padding: 0 0.5rem;
+}
+
+.bid-items {
+  display: flex;
+  flex-direction: column;
+}
+
+.bid-item {
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.3s ease;
+  position: relative;
+}
+
+.bid-item:hover {
+  background-color: #f9f9f9;
+}
+
+.bid-item.highest-bid {
+  background-color: #e8f5e9;
+  border-left: 4px solid #4caf50;
+}
+
+.bid-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  align-items: center;
+}
+
+.bid-bidder {
+  color: #333;
+  font-weight: 500;
+}
+
+.bid-amount {
+  color: #0066cc;
+  font-weight: 600;
+  font-size: 1.1em;
+}
+
+.bid-time {
+  color: #999;
+  font-size: 0.9em;
+  cursor: help;
+}
+
+.highest-bid-label {
+  position: absolute;
+  top: 0.5rem;
+  right: 1rem;
+  background-color: #4caf50;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-top: 1px solid #eee;
+  flex-wrap: wrap;
+}
+
+.pagination-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #0066cc;
+  color: white;
+  border-color: #0066cc;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f5f5f5;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.page-number {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  min-width: 2rem;
+}
+
+.page-number:hover {
+  background-color: #f0f0f0;
+  border-color: #0066cc;
+}
+
+.page-number.active {
+  background-color: #0066cc;
+  color: white;
+  border-color: #0066cc;
+}
+
+.pagination-info {
+  width: 100%;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #999;
+  padding: 0 1.5rem 0.5rem 1.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .bid-history-container {
+    padding: 1.5rem;
+  }
+
+  .bid-header-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+
+  .header-time {
+    display: none;
+  }
+
+  .bid-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+
+  .bid-time {
+    display: none;
+  }
+
+  .highest-bid-label {
+    position: static;
+    margin-top: 0.5rem;
+    display: inline-block;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .page-numbers {
+    flex-wrap: wrap;
+  }
+
+  .pagination-btn {
+    flex: 1;
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bid-history-container {
+    padding: 1rem;
+  }
+
+  .bid-header-row,
+  .bid-row {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+    padding: 0.5rem;
+  }
+
+  .header-bidder::before,
+  .header-amount::before,
+  .header-time::before {
+    content: attr(data-label);
+    font-weight: 600;
+  }
+
+  .bid-bidder::before {
+    content: 'Bidder: ';
+    font-weight: 600;
+    margin-right: 0.5rem;
+  }
+
+  .bid-amount::before {
+    content: 'Amount: ';
+    font-weight: 600;
+    margin-right: 0.5rem;
+  }
+
+  .bid-time::before {
+    content: 'Time: ';
+    font-weight: 600;
+    margin-right: 0.5rem;
+    display: inline;
+  }
+
+  .bid-time {
+    display: inline;
+  }
+
+  .pagination-info {
+    padding: 0.5rem;
+  }
+}

@@ -1,0 +1,207 @@
+<div class="property-detail-container">
+  <!-- Back Button -->
+  <div class="back-link">
+    <a routerLink="/properties">← Back to Properties</a>
+  </div>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading">Loading property details...</div>
+  }
+
+  <!-- Error Message -->
+  @if (error()) {
+    <div class="error-message">{{ error() }}</div>
+  }
+
+  <!-- Property Detail -->
+  @if (!loading() && property(); as prop) {
+    <div class="property-detail">
+      <!-- Property Header -->
+      <div class="property-header">
+        <div class="header-image">
+          @if (prop.imageUrl) {
+            <img [src]="prop.imageUrl" [alt]="prop.title" />
+          } @else {
+            <div class="image-placeholder">No Image Available</div>
+          }
+        </div>
+
+        <div class="header-info">
+          <div class="title-section">
+            <h1>{{ prop.title }}</h1>
+            @if (prop.address) {
+              <p class="address">{{ prop.address }}</p>
+            }
+          </div>
+
+          @if (prop.auction && prop.auction.status) {
+            <div [class]="'auction-badge ' + getAuctionStatusClass(prop.auction.status)">
+              {{ prop.auction.status }}
+            </div>
+          }
+
+          <div class="price-section">
+            <span class="price-label">Listed Price</span>
+            <h2 class="price-value">${{ prop.price.toLocaleString() }}</h2>
+          </div>
+
+          @if (prop.auction && prop.auction.currentPrice) {
+            <div class="current-bid-section">
+              <span class="bid-label">Current Auction Bid</span>
+              <p class="bid-value">${{ prop.auction.currentPrice.toLocaleString() }}</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Property Details Section -->
+      <div class="details-section">
+        <div class="details-grid">
+          <div class="detail-card">
+            <h3>Property Type</h3>
+            <p>{{ prop.propertyType }}</p>
+          </div>
+
+          <div class="detail-card">
+            <h3>Location</h3>
+            <p>{{ prop.city }}</p>
+          </div>
+
+          <div class="detail-card">
+            <h3>Size</h3>
+            <p>{{ prop.squareMeters }} m²</p>
+          </div>
+
+          @if (prop.bedrooms) {
+            <div class="detail-card">
+              <h3>Bedrooms</h3>
+              <p>{{ prop.bedrooms }}</p>
+            </div>
+          }
+
+          @if (prop.bathrooms) {
+            <div class="detail-card">
+              <h3>Bathrooms</h3>
+              <p>{{ prop.bathrooms }}</p>
+            </div>
+          }
+
+          @if (prop.description) {
+            <div class="detail-card full-width">
+              <h3>Description</h3>
+              <p>{{ prop.description }}</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Auction Details Section -->
+      @if (auction(); as auctionData) {
+        <div class="auction-section">
+          <h2>Auction Information</h2>
+
+          <div class="auction-details">
+            <div class="auction-row">
+              <span class="label">Auction Status:</span>
+              <span [class]="'status ' + getAuctionStatusClass(auctionData.status)">
+                {{ auctionData.status }}
+              </span>
+            </div>
+
+            <div class="auction-row">
+              <span class="label">Start Date:</span>
+              <span>{{ formatDate(auctionData.startDate) }}</span>
+            </div>
+
+            <div class="auction-row">
+              <span class="label">End Date:</span>
+              <span>{{ formatDate(auctionData.endDate) }}</span>
+            </div>
+
+            <div class="auction-row">
+              <span class="label">Starting Price:</span>
+              <span>${{ auctionData.startingPrice.toLocaleString() }}</span>
+            </div>
+
+            @if (auctionData.currentPrice !== undefined && auctionData.currentPrice !== null) {
+              <div class="auction-row">
+                <span class="label">Current Price:</span>
+                <span class="price-highlight">${{ auctionData.currentPrice.toLocaleString() }}</span>
+              </div>
+            }
+
+            @if (auctionData.highestBidder) {
+              <div class="auction-row">
+                <span class="label">Highest Bidder:</span>
+                <span>{{ auctionData.highestBidder }}</span>
+              </div>
+            }
+          </div>
+
+          @if (auctionData.status === 'Active') {
+            <div class="auction-action">
+              <p class="time-remaining">Time remaining: {{ formatDate(auctionData.endDate) }}</p>
+            </div>
+          } @else {
+            <div class="auction-closed-message">
+              <strong>Auction Closed:</strong> This auction is no longer active. No bids can be placed.
+            </div>
+          }
+        </div>
+
+        <!-- Place Bid Component -->
+        @if (auctionData.status === 'Active') {
+          <app-place-bid [auction]="auctionData"></app-place-bid>
+        }
+
+        <!-- Bid History Component -->
+        <app-bid-history [auction]="auctionData"></app-bid-history>
+      }
+
+      <!-- Additional Info -->
+      <div class="additional-info">
+        <h2>Additional Information</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <h3>Property Features</h3>
+            <ul>
+              <li>Type: {{ prop.propertyType }}</li>
+              <li>Size: {{ prop.squareMeters }} m²</li>
+              @if (prop.bedrooms) {
+                <li>Bedrooms: {{ prop.bedrooms }}</li>
+              }
+              @if (prop.bathrooms) {
+                <li>Bathrooms: {{ prop.bathrooms }}</li>
+              }
+            </ul>
+          </div>
+
+          @if (prop.auction) {
+            <div class="info-item">
+              <h3>Auction Status</h3>
+              <p>{{ prop.auction.status }}</p>
+              @if (prop.auction.currentPrice !== undefined && prop.auction.currentPrice !== null) {
+                <p>Current Bid: ${{ prop.auction.currentPrice.toLocaleString() }}</p>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Back to List Link -->
+    <div class="footer-link">
+      <a routerLink="/properties" class="btn btn-secondary">Back to Properties</a>
+    </div>
+  }
+
+  <!-- Not Found State -->
+  @if (!loading() && !property()) {
+    <div class="not-found">
+      <h2>Property Not Found</h2>
+      <p>The property you're looking for doesn't exist or has been removed.</p>
+      <a routerLink="/properties" class="btn btn-primary">Back to Properties</a>
+    </div>
+  }
+</div>

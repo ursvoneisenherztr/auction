@@ -1,0 +1,90 @@
+<div class="bid-history-container">
+  <h3>Bid History</h3>
+
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading">Loading bid history...</div>
+  }
+
+  <!-- Error Message -->
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+
+  <!-- No Bids Message -->
+  @if (!loading() && bids().length === 0) {
+    <div class="no-bids">
+      <p>No bids placed yet. Be the first to bid!</p>
+    </div>
+  }
+
+  <!-- Bid History List -->
+  @if (!loading() && bids().length > 0) {
+    <div class="bid-list">
+      <div class="bid-list-header">
+        <div class="bid-header-row">
+          <span class="header-bidder">Bidder</span>
+          <span class="header-amount">Amount</span>
+          <span class="header-time">Time</span>
+        </div>
+      </div>
+
+      <div class="bid-items">
+        @for (bid of getPaginatedBids(); track bid.bidId) {
+          <div
+            [class]="'bid-item ' + (isHighestBid(bid) ? 'highest-bid' : '')"
+            [attr.data-highest]="isHighestBid(bid) ? 'true' : null"
+          >
+            <div class="bid-row">
+              <span class="bid-bidder">{{ bid.bidderId }}</span>
+              <span class="bid-amount">${{ bid.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
+              <span class="bid-time" [title]="bid.bidTime">
+                {{ getRelativeTime(bid.bidTime) }}
+              </span>
+            </div>
+            @if (isHighestBid(bid)) {
+              <div class="highest-bid-label">Current Highest</div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Pagination -->
+      @if (getTotalPages() > 1) {
+        <div class="pagination">
+          <button
+            class="pagination-btn"
+            [disabled]="currentPage() === 1"
+            (click)="previousPage()"
+          >
+            ← Previous
+          </button>
+
+          <div class="page-numbers">
+            @for (page of [].constructor(getTotalPages()); let i = $index; track i) {
+              <button
+                class="page-number"
+                [class.active]="currentPage() === i + 1"
+                (click)="goToPage(i + 1)"
+              >
+                {{ i + 1 }}
+              </button>
+            }
+          </div>
+
+          <button
+            class="pagination-btn"
+            [disabled]="currentPage() === getTotalPages()"
+            (click)="nextPage()"
+          >
+            Next →
+          </button>
+        </div>
+
+        <div class="pagination-info">
+          Page {{ currentPage() }} of {{ getTotalPages() }} ({{ bids().length }} total bids)
+        </div>
+      }
+    </div>
+  }
+</div>
