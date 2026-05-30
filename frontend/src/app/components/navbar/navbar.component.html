@@ -1,0 +1,47 @@
+<nav class="navbar">
+  <div class="navbar-container">
+    <div class="navbar-brand">
+      <a routerLink="/dashboard" class="brand-link">
+        <span class="brand-icon">🏛️</span>
+        <span class="brand-name">Auctions.ch</span>
+      </a>
+    </div>
+
+    <div class="navbar-menu" [class.active]="isMenuOpen">
+      <div class="nav-links">
+        <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          📊 Dashboard
+        </a>
+        <a routerLink="/properties" routerLinkActive="active">
+          🏠 Properties
+        </a>
+        <a *ngIf="isAdmin()" routerLink="/admin" routerLinkActive="active">
+          🔧 Admin
+        </a>
+      </div>
+
+      <div class="nav-user">
+        <div *ngIf="isAuthenticated()" class="user-section">
+          <div class="user-info">
+            <span class="user-name">{{ currentUser?.username }}</span>
+            <span class="user-role" [class.admin]="isAdmin()">
+              {{ currentUser?.role === 'admin' ? '👑 Admin' : '🎯 Bidder' }}
+            </span>
+          </div>
+          <button class="btn-logout" (click)="logout()">Sign Out</button>
+        </div>
+
+        <div *ngIf="!isAuthenticated()" class="auth-links">
+          <a routerLink="/login" class="btn-link">Sign In</a>
+          <a routerLink="/register" class="btn-primary">Create Account</a>
+        </div>
+      </div>
+    </div>
+
+    <button class="navbar-toggle" (click)="toggleMenu()" [class.active]="isMenuOpen">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</nav>
