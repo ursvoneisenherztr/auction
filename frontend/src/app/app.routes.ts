@@ -2,10 +2,13 @@ import { Routes } from '@angular/router';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { PropertiesListComponent } from './components/properties-list/properties-list.component';
 import { PropertyDetailComponent } from './components/property-detail/property-detail.component';
+import { AdminDashboardComponent } from './components/admin/admin-dashboard.component';
 
 export const routes: Routes = [
   { path: '', component: DashboardComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'properties', component: PropertiesListComponent },
   { path: 'properties/:id', component: PropertyDetailComponent },
+  { path: 'admin', component: AdminDashboardComponent },
+  { path: 'admin/dashboard', component: AdminDashboardComponent },
 ];

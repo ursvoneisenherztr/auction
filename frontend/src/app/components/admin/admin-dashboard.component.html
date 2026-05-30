@@ -1,0 +1,394 @@
+<div class="admin-dashboard">
+  <!-- Admin Header -->
+  <header class="admin-header">
+    <div class="admin-header-content">
+      <h1>🔧 Admin Dashboard</h1>
+      <p>Manage properties, auctions, users and system settings</p>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="admin-nav">
+    <button 
+      *ngFor="let tab of tabs"
+      class="nav-tab" 
+      [class.active]="activeTab === tab"
+      (click)="activeTab = tab">
+      <span class="tab-label">
+        <span *ngIf="tab === 'overview'">📊 Overview</span>
+        <span *ngIf="tab === 'properties'">🏠 Properties</span>
+        <span *ngIf="tab === 'auctions'">🏷️ Auctions</span>
+        <span *ngIf="tab === 'users'">👥 Users</span>
+        <span *ngIf="tab === 'analytics'">📈 Analytics</span>
+      </span>
+    </button>
+  </nav>
+
+  <!-- Overview Tab -->
+  <div *ngIf="activeTab === 'overview'" class="tab-content">
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-icon">🏠</div>
+        <div class="stat-info">
+          <div class="stat-label">Total Properties</div>
+          <div class="stat-value">{{ stats.totalProperties }}</div>
+        </div>
+      </div>
+
+      <div class="stat-box">
+        <div class="stat-icon">🔥</div>
+        <div class="stat-info">
+          <div class="stat-label">Active Auctions</div>
+          <div class="stat-value">{{ stats.activeAuctions }}</div>
+        </div>
+      </div>
+
+      <div class="stat-box">
+        <div class="stat-icon">👥</div>
+        <div class="stat-info">
+          <div class="stat-label">Total Users</div>
+          <div class="stat-value">{{ stats.totalUsers }}</div>
+        </div>
+      </div>
+
+      <div class="stat-box">
+        <div class="stat-icon">💰</div>
+        <div class="stat-info">
+          <div class="stat-label">Avg. Price</div>
+          <div class="stat-value">{{ formatPrice(stats.averagePropertyPrice) }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="recent-activities">
+      <h3>Recent Activities</h3>
+      <div class="activity-list">
+        <div class="activity-item">
+          <span class="activity-icon">✅</span>
+          <span class="activity-text">Property "Zurich Apartment" was created</span>
+          <span class="activity-time">2 hours ago</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-icon">🔄</span>
+          <span class="activity-text">Auction status changed to Active</span>
+          <span class="activity-time">5 hours ago</span>
+        </div>
+        <div class="activity-item">
+          <span class="activity-icon">💳</span>
+          <span class="activity-text">New bid placed: CHF 500,000</span>
+          <span class="activity-time">1 day ago</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Properties Tab -->
+  <div *ngIf="activeTab === 'properties'" class="tab-content">
+    <div class="section-header">
+      <h2>Property Management</h2>
+      <button class="btn-primary" (click)="openPropertyForm()">+ Add Property</button>
+    </div>
+
+    <!-- Property Form Modal -->
+    <div *ngIf="showPropertyForm" class="modal-overlay" (click)="closePropertyForm()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3>{{ editingProperty ? 'Edit Property' : 'Create Property' }}</h3>
+          <button class="btn-close" (click)="closePropertyForm()">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Title *</label>
+            <input 
+              type="text" 
+              [(ngModel)]="newProperty.title" 
+              placeholder="Property title"
+              class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label>City *</label>
+            <input 
+              type="text" 
+              [(ngModel)]="newProperty.city" 
+              placeholder="City"
+              class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label>Property Type</label>
+            <select [(ngModel)]="newProperty.propertyType" class="form-input">
+              <option>House</option>
+              <option>Apartment</option>
+              <option>Commercial</option>
+              <option>Land</option>
+              <option>Villa</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Price (CHF)</label>
+              <input 
+                type="number" 
+                [(ngModel)]="newProperty.price" 
+                class="form-input">
+            </div>
+
+            <div class="form-group">
+              <label>Square Meters</label>
+              <input 
+                type="number" 
+                [(ngModel)]="newProperty.squareMeters" 
+                class="form-input">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Bedrooms</label>
+              <input 
+                type="number" 
+                [(ngModel)]="newProperty.bedrooms" 
+                class="form-input">
+            </div>
+
+            <div class="form-group">
+              <label>Bathrooms</label>
+              <input 
+                type="number" 
+                [(ngModel)]="newProperty.bathrooms" 
+                class="form-input">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Description</label>
+            <textarea 
+              [(ngModel)]="newProperty.description" 
+              placeholder="Property description"
+              rows="4"
+              class="form-input"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-secondary" (click)="closePropertyForm()">Cancel</button>
+          <button class="btn-primary" (click)="saveProperty()">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search & Filters -->
+    <div class="search-filters">
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery" 
+        placeholder="Search properties..."
+        class="search-input">
+
+      <select [(ngModel)]="filterStatus" class="filter-select">
+        <option value="">All Status</option>
+        <option value="Active">Active</option>
+        <option value="Scheduled">Scheduled</option>
+        <option value="Ended">Ended</option>
+      </select>
+    </div>
+
+    <!-- Properties Table -->
+    <div class="table-container">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>City</th>
+            <th>Type</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>m²</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let property of getFilteredProperties()">
+            <td>{{ property.title }}</td>
+            <td>{{ property.city }}</td>
+            <td>{{ property.propertyType }}</td>
+            <td>{{ formatPrice(property.price) }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="'status-' + (property.auction?.status || 'unknown')?.toLowerCase()">
+                {{ property.auction?.status || 'N/A' }}
+              </span>
+            </td>
+            <td>{{ property.squareMeters }}</td>
+            <td class="actions">
+              <button class="btn-sm btn-edit" (click)="editProperty(property)">Edit</button>
+              <button class="btn-sm btn-delete" (click)="deleteProperty(property.id)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button 
+        class="btn-pagination" 
+        [disabled]="currentPage === 1"
+        (click)="prevPage()">← Previous</button>
+      <span class="page-info">Page {{ currentPage }} of {{ getTotalPages() }}</span>
+      <button 
+        class="btn-pagination" 
+        [disabled]="currentPage === getTotalPages()"
+        (click)="nextPage()">Next →</button>
+    </div>
+  </div>
+
+  <!-- Auctions Tab -->
+  <div *ngIf="activeTab === 'auctions'" class="tab-content">
+    <div class="section-header">
+      <h2>Auction Management</h2>
+    </div>
+
+    <div class="table-container">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>Status</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Starting Price</th>
+            <th>Current Price</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let property of properties">
+            <td>{{ property.title }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="'status-' + (property.auction?.status || 'unknown')?.toLowerCase()">
+                {{ property.auction?.status || 'N/A' }}
+              </span>
+            </td>
+            <td>{{ property.auction?.startDate | slice:0:10 }}</td>
+            <td>{{ property.auction?.endDate | slice:0:10 }}</td>
+            <td>{{ formatPrice(property.auction?.startingPrice || 0) }}</td>
+            <td>{{ formatPrice(property.auction?.currentPrice || 0) }}</td>
+            <td class="actions">
+              <button 
+                class="btn-sm btn-success" 
+                *ngIf="property.auction?.status !== 'Active'"
+                (click)="activateAuction(property.id)">Activate</button>
+              <button 
+                class="btn-sm btn-danger" 
+                *ngIf="property.auction?.status === 'Active'"
+                (click)="endAuction(property.id)">End</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Users Tab -->
+  <div *ngIf="activeTab === 'users'" class="tab-content">
+    <div class="section-header">
+      <h2>User Management</h2>
+    </div>
+
+    <div class="table-container">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Total Bids</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>john_doe</td>
+            <td>john@example.com</td>
+            <td>5</td>
+            <td><span class="status-badge status-active">Active</span></td>
+            <td class="actions">
+              <button class="btn-sm btn-edit">View</button>
+              <button class="btn-sm btn-delete">Ban</button>
+            </td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>jane_smith</td>
+            <td>jane@example.com</td>
+            <td>8</td>
+            <td><span class="status-badge status-active">Active</span></td>
+            <td class="actions">
+              <button class="btn-sm btn-edit">View</button>
+              <button class="btn-sm btn-delete">Ban</button>
+            </td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>bob_wilson</td>
+            <td>bob@example.com</td>
+            <td>3</td>
+            <td><span class="status-badge status-active">Active</span></td>
+            <td class="actions">
+              <button class="btn-sm btn-edit">View</button>
+              <button class="btn-sm btn-delete">Ban</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Analytics Tab -->
+  <div *ngIf="activeTab === 'analytics'" class="tab-content">
+    <div class="section-header">
+      <h2>Analytics & Reports</h2>
+    </div>
+
+    <div class="analytics-grid">
+      <div class="analytics-card">
+        <h3>Auction Revenue by Month</h3>
+        <div class="chart-placeholder">
+          📊 Chart visualization would go here
+        </div>
+      </div>
+
+      <div class="analytics-card">
+        <h3>Properties by Type</h3>
+        <div class="chart-placeholder">
+          📊 Pie chart would go here
+        </div>
+      </div>
+
+      <div class="analytics-card">
+        <h3>Bidding Activity</h3>
+        <div class="chart-placeholder">
+          📊 Line chart would go here
+        </div>
+      </div>
+
+      <div class="analytics-card">
+        <h3>Top Bidders</h3>
+        <div class="chart-placeholder">
+          📊 Leaderboard would go here
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading">Loading data...</div>
+</div>
