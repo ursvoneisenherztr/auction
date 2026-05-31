@@ -40,6 +40,9 @@ namespace AuctionBackend.Functions
                 if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
                 {
                     var badResponse = req.CreateResponse(System.Net.HttpStatusCode.BadRequest);
+                    badResponse.Headers.Add("Access-Control-Allow-Origin", "*");
+                    badResponse.Headers.Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+                    badResponse.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Authorization");
                     await badResponse.WriteAsJsonAsync(new { message = "All fields are required" });
                     return badResponse;
                 }
@@ -47,6 +50,9 @@ namespace AuctionBackend.Functions
                 if (password.Length < 6)
                 {
                     var badResponse = req.CreateResponse(System.Net.HttpStatusCode.BadRequest);
+                    badResponse.Headers.Add("Access-Control-Allow-Origin", "*");
+                    badResponse.Headers.Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+                    badResponse.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Authorization");
                     await badResponse.WriteAsJsonAsync(new { message = "Password must be at least 6 characters" });
                     return badResponse;
                 }
@@ -58,6 +64,9 @@ namespace AuctionBackend.Functions
                 var userId = Guid.NewGuid().ToString();
 
                 var response = req.CreateResponse(System.Net.HttpStatusCode.Created);
+                response.Headers.Add("Access-Control-Allow-Origin", "*");
+                response.Headers.Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+                response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Authorization");
                 await response.WriteAsJsonAsync(new
                 {
                     token = token,
@@ -76,6 +85,9 @@ namespace AuctionBackend.Functions
             {
                 _logger.LogError($"Register error: {ex.Message}");
                 var errorResponse = req.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
+                errorResponse.Headers.Add("Access-Control-Allow-Origin", "*");
+                errorResponse.Headers.Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+                errorResponse.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Authorization");
                 await errorResponse.WriteAsJsonAsync(new { message = "An error occurred during registration" });
                 return errorResponse;
             }

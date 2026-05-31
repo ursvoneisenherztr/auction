@@ -39,6 +39,9 @@ namespace AuctionBackend.Functions
                 if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
                 {
                     var badResponse = req.CreateResponse(System.Net.HttpStatusCode.BadRequest);
+                    badResponse.Headers.Add("Access-Control-Allow-Origin", "*");
+                    badResponse.Headers.Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+                    badResponse.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Authorization");
                     await badResponse.WriteAsJsonAsync(new { message = "Username and password are required" });
                     return badResponse;
                 }
@@ -55,6 +58,9 @@ namespace AuctionBackend.Functions
                 if (user == null)
                 {
                     var unauthorizedResponse = req.CreateResponse(System.Net.HttpStatusCode.Unauthorized);
+                    unauthorizedResponse.Headers.Add("Access-Control-Allow-Origin", "*");
+                    unauthorizedResponse.Headers.Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+                    unauthorizedResponse.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Authorization");
                     await unauthorizedResponse.WriteAsJsonAsync(new { message = "Invalid credentials" });
                     return unauthorizedResponse;
                 }
@@ -63,6 +69,9 @@ namespace AuctionBackend.Functions
                 var token = GenerateJwtToken(user.Username, user.Email, user.Role);
 
                 var response = req.CreateResponse(System.Net.HttpStatusCode.OK);
+                response.Headers.Add("Access-Control-Allow-Origin", "*");
+                response.Headers.Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+                response.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Authorization");
                 await response.WriteAsJsonAsync(new
                 {
                     token = token,
@@ -81,6 +90,9 @@ namespace AuctionBackend.Functions
             {
                 _logger.LogError($"Login error: {ex.Message}");
                 var errorResponse = req.CreateResponse(System.Net.HttpStatusCode.InternalServerError);
+                errorResponse.Headers.Add("Access-Control-Allow-Origin", "*");
+                errorResponse.Headers.Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+                errorResponse.Headers.Add("Access-Control-Allow-Headers", "Content-Type, Authorization");
                 await errorResponse.WriteAsJsonAsync(new { message = "An error occurred during login" });
                 return errorResponse;
             }

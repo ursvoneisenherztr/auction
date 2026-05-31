@@ -10,6 +10,17 @@ var host = new HostBuilder()
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
         
+        // Add CORS support
+        services.AddCors(options => {
+            options.AddDefaultPolicy(builder => {
+                builder
+                    .WithOrigins("http://localhost:4200", "http://localhost:23584")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+            });
+        });
+        
         // Add DbContext with SQL Server
         var connectionString = Environment.GetEnvironmentVariable("DatabaseConnection")
             ?? "Server=(localdb)\\mssqllocaldb;Database=AuctionDb;Integrated Security=true;TrustServerCertificate=true;";
